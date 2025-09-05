@@ -1,3 +1,4 @@
+// src/pages/Checkout/Checkout.jsx
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RiBankCardLine } from "react-icons/ri";
@@ -13,11 +14,11 @@ const Checkout = () => {
   const [wilayat, setWilayat] = useState('');
   const [description, setDescription] = useState('');
 
-  const { products, totalPrice, country } = useSelector((state) => state.cart);
+  const { products, totalPrice } = useSelector((state) => state.cart);
 
-  const baseShippingFee = country === 'الإمارات'? 4 : 2;
-  const currency = country === 'الإمارات' ? 'د.إ' : 'ر.ع.';
-  const exchangeRate = country === 'الإمارات' ? 9.5 : 1;
+  const baseShippingFee = 2;
+  const currency = 'ر.ع.';
+  const exchangeRate = 1;
   const shippingFee = baseShippingFee * exchangeRate;
 
   useEffect(() => {
@@ -36,24 +37,22 @@ const Checkout = () => {
       return;
     }
 
-    if (!customerName || !customerPhone || !country || !wilayat || !email) {
-      setError("الرجاء إدخال جميع المعلومات المطلوبة (الاسم، رقم الهاتف، الإيميل، البلد، العنوان)");
+    if (!customerName || !customerPhone || !wilayat || !email) {
+      setError("الرجاء إدخال جميع المعلومات المطلوبة (الاسم، رقم الهاتف، الإيميل، العنوان)");
       return;
     }
-
-    // ملاحظة: لا نقوم بتعديل حالة السلة هنا إطلاقاً (لا تفريغ تلقائي).
 
     const body = {
       products: products.map(product => ({
         _id: product._id,
         name: product.name,
-        price: product.price,
-        quantity: product.quantity,
+        price: Number(product.price),
+        quantity: Number(product.quantity),
         image: Array.isArray(product.image) ? product.image[0] : product.image
       })),
       customerName,
       customerPhone,
-      country,
+      country: "سلطنة عمان",
       wilayat,
       description,
       email
@@ -62,9 +61,7 @@ const Checkout = () => {
     try {
       const response = await fetch(`${getBaseUrl()}/api/orders/create-checkout-session`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)
       });
 
@@ -76,7 +73,6 @@ const Checkout = () => {
       const session = await response.json();
 
       if (session.paymentLink) {
-        // لا تقم بتغيير السلة — فقط نوجّه المستخدم لصفحة الدفع
         window.location.href = session.paymentLink;
       } else {
         setError("حدث خطأ أثناء إنشاء رابط الدفع. الرجاء المحاولة مرة أخرى.");
@@ -89,7 +85,6 @@ const Checkout = () => {
 
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto flex flex-col md:flex-row gap-8">
-      {/* تفاصيل الفاتورة */}
       <div className="flex-1">
         <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">تفاصيل الفاتورة</h1>
         {error && <div className="text-red-500 mb-4">{error}</div>}
@@ -135,7 +130,7 @@ const Checkout = () => {
               <input
                 type="text"
                 className="w-full p-2 border rounded-md bg-gray-100"
-                value={country}
+                value="سلطنة عمان"
                 readOnly
               />
             </div>
@@ -174,7 +169,6 @@ const Checkout = () => {
         </form>
       </div>
 
-      {/* تفاصيل الطلب */}
       <div className="w-full md:w-1/3 p-4 md:p-6 bg-white rounded-lg shadow-lg border border-gray-200">
         <h2 className="text-lg md:text-xl font-bold mb-4 text-gray-800">طلبك</h2>
         <div className="space-y-4">
@@ -182,7 +176,7 @@ const Checkout = () => {
             <div key={product._id} className="flex justify-between items-center py-2 border-b border-gray-100">
               <span className="text-gray-700">{product.name} × {product.quantity}</span>
               <span className="text-gray-900 font-medium">
-                {(product.price * product.quantity * exchangeRate).toFixed(2)} {currency}
+                {(Number(product.price) * Number(product.quantity) * exchangeRate).toFixed(2)} {currency}
               </span>
             </div>
           ))}
@@ -195,7 +189,7 @@ const Checkout = () => {
           <div className="flex justify-between items-center pt-4 border-t border-gray-200">
             <span className="text-gray-800 font-semibold">الإجمالي</span>
             <p className="text-gray-900 font-bold">
-              {currency}{((totalPrice + baseShippingFee) * exchangeRate).toFixed(2)}
+              {currency}{((Number(totalPrice) + baseShippingFee) * exchangeRate).toFixed(2)}
             </p>
           </div>
         </div>
@@ -211,7 +205,7 @@ const Checkout = () => {
             <span>الدفع باستخدام ثواني</span>
           </button>
           <p className="mt-4 text-sm text-gray-600">
-            سيتم استخدام بياناتك الشخصية لمعالجة طلبك، ودعم تجربتك عبر هذا الموقع، ولأغراض أخرى موضحة في{" "}
+            سيتم استخدام بياناتك الشخصية لمعالجة طلبك، ودعم تجربتك عبر هذا الموقع، ولأغراض أخرى موضحة في{' '}
             <a className="text-blue-600 hover:underline">سياسة الخصوصية</a>.
           </p>
         </div>

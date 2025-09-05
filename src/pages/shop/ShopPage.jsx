@@ -68,11 +68,11 @@ const ShopPage = () => {
                 <div className='flex flex-col md:flex-row md:gap-8 gap-6'>
                     {/* Products List */}
                     <div className='md:w-3/4'>
-                        <div className='flex justify-between items-center mb-6'>
+                        {/* <div className='flex justify-between items-center mb-6'>
                             <h3 className='text-lg font-medium text-gray-700'>
                                 عرض {startProduct}-{endProduct} من {totalProducts} منتج
                             </h3>
-                        </div>
+                        </div> */}
 
                         {products.length > 0 ? (
                             <>

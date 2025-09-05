@@ -20,17 +20,14 @@ const TrendingProducts = ({ onProductsLoaded }) => {
     limit: 20,
   });
 
-  // إشعار Home بانتهاء التحميل مرة واحدة فقط
   const notifiedRef = useRef(false);
   useEffect(() => {
     if (!isLoading && !notifiedRef.current) {
-      // نعتبر التحميل منتهياً عند نجاح الجلب (حتى لو صفر منتجات) أو عند وجود خطأ
       if (onProductsLoaded) onProductsLoaded();
       notifiedRef.current = true;
     }
   }, [isLoading, onProductsLoaded]);
 
-  // العملة وسعر الصرف
   const currency = country === 'الإمارات' ? 'د.إ' : 'ر.ع.';
   const exchangeRate = country === 'الإمارات' ? 9.5 : 1;
 
@@ -66,18 +63,15 @@ const TrendingProducts = ({ onProductsLoaded }) => {
   return (
     <section className="section__container product__container">
       <div className="relative text-center" dir="rtl">
-        {/* العنوانين */}
         <h2 className="text-[32px] font-normal text-[#c8c5b9] mb-1">أستكشف مجموعاتنا المميزة</h2>
         <p className="text-[32px] font-bold text-[#3c3c3c] mb-4">عبر أقسامنا الفريدة</p>
 
-        {/* الشعار مع الخطين */}
         <div className="flex items-center justify-center gap-3 relative z-10">
           <span className="flex-1 max-w-[100px] h-px bg-[#c8c5b9]"></span>
           <img src={log} alt="شعار الأنثور" className="h-20 w-auto object-contain" />
           <span className="flex-1 max-w-[100px] h-px bg-[#c8c5b9]"></span>
         </div>
 
-        {/* الشعار كخلفية نصف ظاهر */}
         <img
           src={log}
           alt="شعار الأنثور"
@@ -87,7 +81,8 @@ const TrendingProducts = ({ onProductsLoaded }) => {
       </div>
 
       <div className="mt-12" dir="rtl">
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {/* ✅ العناصر في المنتصف */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
           {products.slice(0, visibleProducts).map((product) => {
             const price = getFirstPrice(product);
             const oldPrice = getOldPrice(product);
@@ -97,10 +92,10 @@ const TrendingProducts = ({ onProductsLoaded }) => {
             return (
               <div
                 key={product._id}
-                className="product__card bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 relative flex flex-col h-full"
+                className="product__card bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 relative flex flex-col h-full text-center"
               >
                 {oldPrice && oldPrice !== price && (
-                  <div className="absolute top-3 left-3 bg-[#3D4B2E] text-white text-xs font-bold px-2 py-1 rounded-full z-10">
+                  <div className="absolute top-3 left-3 bg-[#e9b86b] text-white text-xs font-bold px-2 py-1 rounded-full z-10">
                     خصم {discountPercentage}%
                   </div>
                 )}
@@ -137,11 +132,6 @@ const TrendingProducts = ({ onProductsLoaded }) => {
                       </s>
                     )}
                   </div>
-
-                  {/* مثال لتقييم النجوم إذا كنت تستخدمه */}
-                  {/* <div className="mt-2">
-                    <RatingStars rating={product.rating || 4.5} />
-                  </div> */}
                 </div>
               </div>
             );
@@ -152,7 +142,7 @@ const TrendingProducts = ({ onProductsLoaded }) => {
       {visibleProducts < products.length && (
         <div className="product__btn text-center mt-8" dir="rtl">
           <button
-            className="hover:bg-[#c19e22] bg-[#4E5A3F] text-white px-6 py-2 rounded-md transition-colors"
+            className="hover:bg-[#c19e22] bg-[#e9b86b] text-white px-6 py-2 rounded-md transition-colors"
             onClick={loadMoreProducts}
           >
             عرض المزيد

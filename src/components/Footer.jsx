@@ -9,11 +9,12 @@ import {
 } from "react-icons/si";
 import { FaInstagram, FaWhatsapp } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import Thw from "../assets/images__4_-removebg-preview.png";
 
 const Footer = () => {
   return (
     <footer className="bg-[#f5f5f5]">
-      {/* ===== شريط علوي FULL-BLEED بعرض الشاشة بالكامل ===== */}
+      {/* ===== شريط علوي FULL-BLEED ===== */}
       <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden">
         {/* الخلفية المنحنية */}
         <svg
@@ -22,7 +23,7 @@ const Footer = () => {
           preserveAspectRatio="none"
           aria-hidden="true"
         >
-          <path d="M28 0 H100 V36 H28 A28 28 0 0 1 28 0 Z" fill="#e9b86b"/>
+          <path d="M28 0 H100 V36 H28 A28 28 0 0 1 28 0 Z" fill="#e9b86b" />
         </svg>
 
         {/* محتوى الشريط */}
@@ -44,7 +45,11 @@ const Footer = () => {
                   <SiVisa className="text-3xl md:text-4xl drop-shadow-sm" />
                   <SiMastercard className="text-3xl md:text-4xl drop-shadow-sm" />
                   <SiApplepay className="text-3xl md:text-4xl drop-shadow-sm" />
-                  <SiGooglepay className="text-3xl md:text-4xl drop-shadow-sm" />
+                  <img
+                    src={Thw}
+                    className="w-10 invert brightness-0"
+                    alt="Thawani"
+                  />
                 </div>
               </div>
 
@@ -62,13 +67,12 @@ const Footer = () => {
       {/* الأقسام السفلية */}
       <div className="max-w-7xl mx-auto px-4">
         <div className="py-10 grid grid-cols-1 md:grid-cols-3 gap-10 text-[#2e3528] md:text-right text-center">
-          
           {/* أركان الجودة العالمية */}
           <div>
             <h4 className="text-xl font-bold mb-3">أركان الجودة العالمية</h4>
             <p className="text-sm leading-7 text-[#4a4a4a]" dir="ltr">
-              نحن في أركان الجودة العالمية نقدم منتجات طبيعية عالية الجودة 
-              بعناية فائقة، لنمنحك الصحة، المذاق الأصيل، والثقة التي تدوم. 
+              نحن في أركان الجودة العالمية نقدم منتجات طبيعية عالية الجودة
+              بعناية فائقة، لنمنحك الصحة، المذاق الأصيل، والثقة التي تدوم.
               نحرص على تجربة تسوّق سلسة وخدمة عملاء سريعة تلبي توقعاتك.
             </p>
           </div>
@@ -101,10 +105,9 @@ const Footer = () => {
           {/* تواصل معنا */}
           <div>
             <h4 className="text-xl font-bold mb-3">تواصل معنا</h4>
-            <p className="text-sm mb-4"></p>
-            <div className="flex justify-center md:justify-start gap-4">
+            <div className="flex justify-center md:justify-start gap-4 mb-4">
               <a
-                // href="https://www.instagram.com/"
+                href="https://www.instagram.com/arkaan_algwda?igsh=MWs2NTNuY3Bja2Nwbg%3D%3D&utm_source=qr"
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-[#d3ae27] transition"
@@ -113,13 +116,26 @@ const Footer = () => {
                 <FaInstagram className="text-xl" />
               </a>
               <a
-                // href="https://api.whatsapp.com/send/?phone=96891175734&text&type=phone_number&app_absent=0"
+                href="https://api.whatsapp.com/send/?phone=96898859095&text&type=phone_number&app_absent=0"
                 target="_blank"
                 rel="noreferrer"
                 className="hover:text-[#d3ae27] transition"
                 aria-label="WhatsApp"
               >
                 <FaWhatsapp className="text-xl" />
+              </a>
+            </div>
+
+            {/* موقع المحل */}
+            <div className="text-sm text-[#4a4a4a] leading-6">
+              <p className="font-semibold">📍 موقعنا</p>
+              <a
+                href="https://www.google.com/maps/search/22V2%2BFQF%D8%8C%20%D8%AD%D9%84%D8%A9%20%D8%A7%D9%84%D8%A8%D8%B1%D8%AC%D8%8C%20%D8%B9%D9%85%D8%A7%D9%86/@24.0437,57.0019,17z?hl=ar"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#d3ae27] hover:underline"
+              >
+                حلة البرج، عمان
               </a>
             </div>
           </div>

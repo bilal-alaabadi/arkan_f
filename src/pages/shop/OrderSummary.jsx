@@ -1,4 +1,3 @@
-// components/OrderSummary.jsx
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearCart } from '../../redux/features/cart/cartSlice';
@@ -6,79 +5,59 @@ import { Link } from 'react-router-dom';
 
 const OrderSummary = ({ onClose }) => {
   const dispatch = useDispatch();
-  const { products, totalPrice, shippingFee, country } = useSelector((store) => store.cart);
-  
-  const currency = country === 'الإمارات' ? 'د.إ' : 'ر.ع.';
-  const exchangeRate = country === 'الإمارات' ? 9.5 : 1;
-  
-  const grandTotal = (totalPrice + shippingFee) * exchangeRate;
-  const formattedTotalPrice = (totalPrice * exchangeRate).toFixed(2);
-  const formattedShippingFee = (shippingFee * exchangeRate).toFixed(2);
-  const formattedGrandTotal = grandTotal.toFixed(2);
+  const { products = [], totalPrice = 0, shippingFee = 0, country } = useSelector((s) => s.cart);
 
-  const handleClearCart = () => {
-    dispatch(clearCart());
-  };
+  const isAED = country === 'الإمارات' || country === 'دول الخليج';
+  const currency = isAED ? 'د.إ' : 'ر.ع.';
+  const exchangeRate = isAED ? 9.5 : 1;
 
-  const renderCustomizationDetails = (item) => {
-    if (!item.customization) return null;
-    
-    return (
-      <div className="mt-2 text-sm text-gray-100">
-        {item.customization.length && <p>الطول: {item.customization.length} سم</p>}
-        {item.customization.width && <p>العرض: {item.customization.width} سم</p>}
-        {item.customization.sleeveType && <p>نوع الأكمام: {item.customization.sleeveType}</p>}
-        {item.customization.closureType && <p>نوع الإغلاق: {item.customization.closureType}</p>}
-        {item.customization.color && <p>اللون: {item.customization.color}</p>}
-        {item.customization.notes && <p>ملاحظات: {item.customization.notes}</p>}
-      </div>
-    );
-  };
+  const baseShippingFee = country === 'دول الخليج' ? 5 : Number(shippingFee || 0);
+  const grandTotal = (Number(totalPrice) + Number(baseShippingFee)) * exchangeRate;
 
   return (
-    <div className='bg-[#e9b86b] mt-5 rounded text-base' >
-      <div className='px-6 py-4 space-y-5'>
-        <h2 className='text-xl text-white'>ملخص الطلب</h2>
-        
-        <div className="text-white space-y-4">
-          {products.map((item, index) => (
-            <div key={index} className="border-b pb-3">
-              <p>{item.name} × {item.quantity}</p>
-              {item.customization && renderCustomizationDetails(item)}
-              <p className="text-sm mt-1">السعر: {(item.price * exchangeRate * item.quantity).toFixed(2)} {currency}</p>
-            </div>
-          ))}
+    <div className="text-sm text-gray-800" dir="rtl">
+      {/* المجاميع */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-gray-600">الإجمالي الفرعي</span>
+          <span className="font-medium">
+            {(Number(totalPrice) * exchangeRate).toFixed(2)} {currency}
+          </span>
         </div>
-        
-        <div className='text-white'>
-          <p>السعر الفرعي: {formattedTotalPrice} {currency}</p>
-          <p>رسوم الشحن: {formattedShippingFee} {currency}</p>
-          <p className='font-bold mt-2'>الإجمالي النهائي: {formattedGrandTotal} {currency}</p>
+        <div className="flex items-center justify-between">
+          <span className="text-gray-600">الشحن</span>
+          <span className="font-medium">
+            {(Number(baseShippingFee) * exchangeRate).toFixed(2)} {currency}
+          </span>
         </div>
-        
-        <div className='px-4 mb-6'>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleClearCart();
-            }}
-            className='bg-red-500 px-3 py-1.5 text-white mt-2 rounded-md flex justify-between items-center mb-4 hover:bg-red-600 transition-colors'
-          >
-            <span className='mr-2'>تفريغ السلة</span>
-            <i className="ri-delete-bin-7-line"></i>
-          </button>
-          <Link to="/checkout">
-            <button
-              onClick={onClose}
-              className='bg-green-600 px-3 py-1.5 text-white mt-2 rounded-md flex justify-between items-center hover:bg-green-700 transition-colors '
-            >
-              <span className='mr-2'>إتمام الشراء</span>
-              <i className="ri-bank-card-line"></i>
-            </button>
-          </Link>
+
+        <div className="flex items-center justify-between pt-2 border-t">
+          <span className="font-bold text-base">المجموع</span>
+          <span className="font-extrabold text-base">
+            {grandTotal.toFixed(2)} {currency}
+          </span>
         </div>
       </div>
-    </div> 
+
+      {/* الأزرار */}
+      <div className="mt-3 space-y-2">
+        <Link to="/checkout" className="block">
+          <button
+            onClick={onClose}
+            className="w-full rounded-md bg-[#e9b86b] text-white py-2.5 text-sm font-medium  transition-colors"
+          >
+            المتابعة للدفع
+          </button>
+        </Link>
+
+        <button
+          onClick={() => dispatch(clearCart())}
+          className="w-full rounded-md border border-gray-300 bg-white py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+        >
+          مسح السلة
+        </button>
+      </div>
+    </div>
   );
 };
 

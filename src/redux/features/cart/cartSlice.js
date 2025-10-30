@@ -25,30 +25,27 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    addToCart: (state, action) => {
-      const existingProduct = state.products.find(
-        (product) => product._id === action.payload._id
-      );
+addToCart: (state, action) => {
+  const existingProduct = state.products.find(
+    (product) => product._id === action.payload._id
+  );
 
-      if (existingProduct) {
-        existingProduct.quantity += 1;
-      } else {
-        state.products.push({ 
-          ...action.payload, 
-          quantity: 1,
-          // نسخ بيانات التخصيص إذا وجدت
-          ...(action.payload.customization && { 
-            customization: action.payload.customization 
-          })
-        });
-      }
+  const quantityToAdd = action.payload.quantity ?? 1;
 
-      state.selectedItems = setSelectedItems(state);
-      state.totalPrice = setTotalPrice(state);
-      
-      // حفظ الحالة في localStorage
-      saveState(state);
-    },
+  if (existingProduct) {
+    existingProduct.quantity += quantityToAdd; // ✅ أضف الكمية المختارة
+  } else {
+    state.products.push({
+      ...action.payload,
+      quantity: quantityToAdd,
+    });
+  }
+
+  state.selectedItems = setSelectedItems(state);
+  state.totalPrice = setTotalPrice(state);
+  saveState(state);
+},
+
     updateQuantity: (state, action) => {
       const product = state.products.find(p => p._id === action.payload.id);
       if (product) {

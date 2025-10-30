@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 import RatingStars from '../../components/RatingStars';
 import { useFetchAllProductsQuery } from '../../redux/features/products/productsApi';
 import { useSelector } from 'react-redux';
-import log from "../../assets/GLOBAL QUALITY PILLARS LOGO_0.png"; // شعار الأنثور
+import log from "../../assets/GLOBAL QUALITY PILLARS LOGO_0.png";
 
 const TrendingProducts = ({ onProductsLoaded }) => {
-  const [visibleProducts, setVisibleProducts] = useState(4);
+  const [visibleProducts, setVisibleProducts] = useState(8);
   const { country } = useSelector((state) => state.cart);
 
   const {
@@ -31,7 +31,7 @@ const TrendingProducts = ({ onProductsLoaded }) => {
   const currency = country === 'الإمارات' ? 'د.إ' : 'ر.ع.';
   const exchangeRate = country === 'الإمارات' ? 9.5 : 1;
 
-  const loadMoreProducts = () => setVisibleProducts((prev) => prev + 4);
+  const loadMoreProducts = () => setVisibleProducts((prev) => prev + 8);
 
   const getFirstPrice = (product) => {
     if (!product) return 0;
@@ -81,8 +81,8 @@ const TrendingProducts = ({ onProductsLoaded }) => {
       </div>
 
       <div className="mt-12" dir="rtl">
-        {/* ✅ العناصر في المنتصف */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
+        {/* هاتف: عمودان — شاشات أكبر: أربعة أعمدة */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 justify-items-center">
           {products.slice(0, visibleProducts).map((product) => {
             const price = getFirstPrice(product);
             const oldPrice = getOldPrice(product);
@@ -92,7 +92,7 @@ const TrendingProducts = ({ onProductsLoaded }) => {
             return (
               <div
                 key={product._id}
-                className="product__card bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 relative flex flex-col h-full text-center"
+                className="product__card bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 relative flex flex-col h-full w-full"
               >
                 {oldPrice && oldPrice !== price && (
                   <div className="absolute top-3 left-3 bg-[#e9b86b] text-white text-xs font-bold px-2 py-1 rounded-full z-10">
@@ -100,23 +100,25 @@ const TrendingProducts = ({ onProductsLoaded }) => {
                   </div>
                 )}
 
-                <div className="relative flex-grow">
-                  <Link to={`/shop/${product._id}`} className="block h-full">
-                    <div className="h-80 w-full overflow-hidden">
+                <div className="relative">
+                  <Link to={`/shop/${product._id}`} className="block">
+                    {/* مقاس ثابت للصورة بغض النظر عن أبعاد الصورة الأصلية */}
+                    <div className="w-full h-[260px] overflow-hidden bg-gray-50">
                       <img
-                        src={product.image?.[0] || 'https://via.placeholder.com/300'}
+                        src={product.image?.[0] || 'https://via.placeholder.com/600x600'}
                         alt={product.name || 'صورة المنتج'}
-                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                        className="w-full h-full object-cover"
                         onError={(e) => {
-                          e.currentTarget.src = 'https://via.placeholder.com/300';
+                          e.currentTarget.src = 'https://via.placeholder.com/600x600';
                           e.currentTarget.alt = 'صورة المنتج غير متوفرة';
                         }}
+                        draggable="false"
                       />
                     </div>
                   </Link>
                 </div>
 
-                <div className="p-4">
+                <div className="p-4 text-center">
                   <h4 className="text-lg font-semibold mb-1 line-clamp-2" title={product.name}>
                     {product.name || 'اسم المنتج'}
                   </h4>

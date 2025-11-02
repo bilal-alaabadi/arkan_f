@@ -23,6 +23,9 @@ const Checkout = () => {
   // خيار دولة من دول الخليج (يظهر فقط إذا country === "دول الخليج")
   const [gulfCountry, setGulfCountry] = useState("");
 
+  // ✅ خيار الشحن داخل عُمان
+  const [shippingMethod, setShippingMethod] = useState("home"); // "home" منزل (2 ر.ع) | "office" مكتب (1 ر.ع)
+
   const { products, totalPrice, country, giftCard } = useSelector((state) => state.cart);
 
   const currency = country === "دول الخليج" ? "د.إ" : "ر.ع.";
@@ -34,9 +37,9 @@ const Checkout = () => {
       // الإمارات = 4 ر.ع ، غيرها = 5 ر.ع
       return gulfCountry === "الإمارات" ? 4 : 5;
     }
-    // داخل عُمان بقيت 2 ر.ع كما كانت
-    return 2;
-  }, [country, gulfCountry]);
+    // داخل عُمان: منزل = 2 ر.ع، مكتب = 1 ر.ع
+    return shippingMethod === "office" ? 1 : 2;
+  }, [country, gulfCountry, shippingMethod]);
 
   // بعد ذلك تُعرَض بحسب العملة المختارة (قد تُحوَّل إلى AED إن كانت دول الخليج)
   const shippingFee = baseShippingFee * exchangeRate;
@@ -116,6 +119,7 @@ const Checkout = () => {
       description,
       email,
       depositMode: !!payDepositEffective,
+      shippingMethod, // ✅ إرسال طريقة الشحن ("home" / "office")
       // نُرسل بطاقة الهدية العامة إن وُجدت
       giftCard:
         giftCard &&
@@ -234,6 +238,35 @@ const Checkout = () => {
                   </select>
                 </div>
               </div>
+
+              {/* ✅ اختيار طريقة الشحن داخل عُمان فقط */}
+              {country !== "دول الخليج" && (
+                <div className="mt-2">
+                  <label className="block text-gray-700 mb-2">طريقة الشحن داخل عُمان</label>
+                  <div className="flex items-center gap-4">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="shippingMethod"
+                        value="home"
+                        checked={shippingMethod === "home"}
+                        onChange={() => setShippingMethod("home")}
+                      />
+                      <span>توصيل للمنزل (2 ر.ع)</span>
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="shippingMethod"
+                        value="office"
+                        checked={shippingMethod === "office"}
+                        onChange={() => setShippingMethod("office")}
+                      />
+                      <span>استلام من المكتب (1 ر.ع)</span>
+                    </label>
+                  </div>
+                </div>
+              )}
 
               {/* عند اختيار "دول الخليج" تظهر قائمة لاختيار الدولة */}
               {country === "دول الخليج" && (

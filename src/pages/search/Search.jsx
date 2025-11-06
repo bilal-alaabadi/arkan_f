@@ -1,43 +1,73 @@
-import React, { useState } from 'react'
-
-import productsData from "../../data/products.json"
+// src/pages/search/Search.jsx
+import React, { useEffect, useState } from 'react';
 import ProductCards from '../shop/ProductCards';
+import { getBaseUrl } from '../../utils/baseURL';
 
 const Search = () => {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filteredProducts, setFilteredProducts] = useState(productsData);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
-    const handleSearch = () => {
-        const query = searchQuery.toLowerCase();
-
-        const filtered = productsData.filter(product => product.name.toLowerCase().includes(query) || product.description.toLowerCase().includes(query));
-
-        setFilteredProducts(filtered);
+  // 🔍 جلب المنتجات (كلها إذا لم يوجد نص بحث)
+  const fetchResults = async (q = '') => {
+    try {
+      setIsLoading(true);
+      const url = new URL(`${getBaseUrl()}/api/products/search`);
+      if (q.trim()) url.searchParams.set('q', q.trim());
+      const res = await fetch(url.toString());
+      const data = await res.json();
+      setFilteredProducts(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('خطأ في جلب النتائج:', err);
+      setFilteredProducts([]);
+    } finally {
+      setIsLoading(false);
     }
-    return (
-        <>
-            <section className='section__container bg-primary-light'>
-                <h2 className='section__header capitalize'>Search Products</h2>
-                <p className='section__subheader'>Browse a diverse range of categories, from chic dresses to versatile accessories. Elevate your style today!</p>
-            </section>
+  };
 
-            <section className='section__container'>
-                <div className='w-full mb-12 flex flex-col md:flex-row items-center justify-center gap-4'>
-                    <input type="text" 
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className='search-bar w-full max-w-4xl p-2 border rounded'
-                    placeholder='Search for products...' />
+  // ✅ جلب كل المنتجات عند تحميل الصفحة
+  useEffect(() => {
+    fetchResults();
+  }, []);
 
-                    <button 
-                    onClick={handleSearch}
-                    className='search-button w-full md:w-auto py-2 px-8 bg-primary text-white rounded'>Search</button>
-                </div>
+  // 🔁 بحث لحظي
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      fetchResults(searchQuery);
+    }, 300);
+    return () => clearTimeout(delay);
+  }, [searchQuery]);
 
-                <ProductCards products={filteredProducts}/>
-            </section>
-        </>
-    )
-}
+  return (
+    <>
+      <section className='section__container bg-[#f7f4ee]'>
+        <h2 className='section__header capitalize text-center'>ابحث عن المنتجات</h2>
+        <p className='section__subheader text-center'>
+          يمكنك كتابة اسم المنتج أو ترك الحقل فارغًا لعرض جميع المنتجات.
+        </p>
+      </section>
 
-export default Search
+      <section className='section__container'>
+        <div className='w-full mb-8 flex flex-col md:flex-row items-center justify-center gap-4' dir="rtl">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className='w-full max-w-4xl p-3 border rounded outline-none focus:ring-2 focus:ring-[#e9b86b]'
+            placeholder='ابحث باسم المنتج أو الوصف...'
+          />
+        </div>
+
+        {isLoading ? (
+          <div className="text-center py-12 text-lg text-gray-600">جاري تحميل المنتجات...</div>
+        ) : filteredProducts.length > 0 ? (
+          <ProductCards products={filteredProducts} />
+        ) : (
+          <div className="text-center py-12 text-gray-600">لا توجد منتجات متاحة</div>
+        )}
+      </section>
+    </>
+  );
+};
+
+export default Search;

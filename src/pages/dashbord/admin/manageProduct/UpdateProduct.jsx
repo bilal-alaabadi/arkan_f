@@ -9,30 +9,12 @@ import UploadImage from '../addProduct/UploadImage';
 
 const categories = [
   { label: 'أختر منتج', value: '' },
-  { label: 'عسل سمر', value: 'عسل سمر' },
-  { label: 'عسل السدر', value: 'عسل السدر' },
-  { label: 'عسل زهرة الربيع', value: 'عسل زهرة الربيع' },
-  { label: 'خبز النحل', value: 'خبز النحل' },
-  { label: 'حبوب لقاح', value: 'حبوب لقاح' },
-  { label: 'غذاء ملكات بلغاري', value: 'غذاء ملكات بلغاري' },
-  { label: 'غذاء ملكات استرالي', value: 'غذاء ملكات استرالي' },
-  { label: 'غذاء ملكات صيني', value: 'غذاء ملكات صيني' },
-];
-
-const honeyCategories = ['عسل سمر', 'عسل السدر', 'عسل زهرة الربيع'];
-
-const fixedSizesByCategory = {
-  'خبز النحل': '100 جرام',
-  'حبوب لقاح': '100 جرام',
-  'غذاء ملكات بلغاري': '50 جرام',
-  'غذاء ملكات استرالي': '50 جرام',
-  'غذاء ملكات صيني': '50 جرام',
-};
-
-const honeySizes = [
-  { label: 'اختر الحجم', value: '' },
-  { label: '1 كجم', value: '1 كجم' },
-  { label: '0.5 كجم', value: '0.5 كجم' },
+  { label: 'أعسال عمانية', value: 'أعسال عمانية' },
+  { label: 'غذاء ملكات', value: 'غذاء ملكات' },
+  { label: 'منتجات النحله', value: 'منتجات النحله' },
+  { label: 'أعشاب علاجيه', value: 'أعشاب علاجيه' },
+  { label: 'مكسرات', value: 'مكسرات' },
+  { label: 'بن ( قهوة)', value: 'بن ( قهوة)' },
 ];
 
 const UpdateProduct = () => {
@@ -46,14 +28,14 @@ const UpdateProduct = () => {
   const [product, setProduct] = useState({
     name: '',
     category: '',
-    size: '',
+    size: '',           // اختياري وقابل للكتابة
     price: '',
     oldPrice: '',
     description: '',
     image: [],
+    stock: '',          // ✅ الكمية
   });
 
-  const [showHoneySize, setShowHoneySize] = useState(false);
   const [newImages, setNewImages] = useState([]);
 
   useEffect(() => {
@@ -66,30 +48,10 @@ const UpdateProduct = () => {
         oldPrice: productData.oldPrice?.toString() || '',
         description: productData.description || '',
         image: productData.image || [],
+        stock: (productData.stock ?? 0).toString(),
       });
-
-      const cat = productData.category;
-      if (honeyCategories.includes(cat)) {
-        setShowHoneySize(true);
-      } else {
-        setShowHoneySize(false);
-        const fixed = fixedSizesByCategory[cat] || '';
-        setProduct((p) => ({ ...p, size: fixed }));
-      }
     }
   }, [productData]);
-
-  useEffect(() => {
-    const cat = product.category;
-    if (honeyCategories.includes(cat)) {
-      setShowHoneySize(true);
-      // لا نعبّي الحجم تلقائي، يختاره من القائمة
-    } else {
-      setShowHoneySize(false);
-      const fixed = fixedSizesByCategory[cat] || '';
-      setProduct((p) => ({ ...p, size: fixed }));
-    }
-  }, [product.category]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -104,7 +66,6 @@ const UpdateProduct = () => {
       'صنف المنتج': product.category,
       'السعر': product.price,
       'الوصف': product.description,
-      'الحجم': product.size,
     };
 
     const missing = Object.entries(requiredFields).filter(([_, v]) => !v).map(([k]) => k);
@@ -113,14 +74,23 @@ const UpdateProduct = () => {
       return;
     }
 
+    const parsedStock = product.stock !== '' ? Number(product.stock) : 0;
+    if (!Number.isFinite(parsedStock) || parsedStock < 0) {
+      alert('الكمية يجب أن تكون رقمًا صالحًا أكبر أو يساوي 0');
+      return;
+    }
+
     try {
       const formData = new FormData();
-      formData.append('name', product.name); // السيرفر يضمن "name - size"
+      formData.append('name', product.name); // السيرفر سيضيف الحجم إلى الاسم فقط إن وُجد
       formData.append('category', product.category);
       formData.append('price', String(Number(product.price)));
       formData.append('oldPrice', product.oldPrice ? String(Number(product.oldPrice)) : '');
       formData.append('description', product.description);
-      formData.append('size', product.size);
+      formData.append('stock', String(parsedStock));
+      if (product.size && String(product.size).trim()) {
+        formData.append('size', product.size);
+      }
       formData.append('author', user._id);
 
       if (newImages.length > 0) {
@@ -163,26 +133,13 @@ const UpdateProduct = () => {
           required
         />
 
-        {showHoneySize && (
-          <SelectInput
-            label="الحجم"
-            name="size"
-            value={product.size}
-            onChange={handleChange}
-            options={honeySizes}
-            required
-          />
-        )}
-
-        {!showHoneySize && fixedSizesByCategory[product.category] && (
-          <TextInput
-            label="الحجم"
-            name="size"
-            value={product.size}
-            onChange={() => {}}
-            readOnly
-          />
-        )}
+        <TextInput
+          label="الحجم (اختياري)"
+          name="size"
+          placeholder="مثال: 250 جرام أو 1 كجم"
+          value={product.size}
+          onChange={handleChange}
+        />
 
         <TextInput
           label="السعر الحالي"
@@ -201,6 +158,16 @@ const UpdateProduct = () => {
           placeholder="100"
           value={product.oldPrice}
           onChange={handleChange}
+        />
+
+        <TextInput
+          label="الكمية المتاحة"
+          name="stock"
+          type="number"
+          placeholder="0"
+          value={product.stock}
+          onChange={handleChange}
+          min="0"
         />
 
         <UploadImage

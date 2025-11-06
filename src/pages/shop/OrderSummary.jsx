@@ -1,3 +1,4 @@
+// src/components/Cart/OrderSummary.jsx
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearCart } from '../../redux/features/cart/cartSlice';
@@ -16,7 +17,6 @@ const OrderSummary = ({ onClose }) => {
 
   return (
     <div className="text-sm text-gray-800" dir="rtl">
-      {/* المجاميع */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-gray-600">الإجمالي الفرعي</span>
@@ -39,7 +39,6 @@ const OrderSummary = ({ onClose }) => {
         </div>
       </div>
 
-      {/* الأزرار */}
       <div className="mt-3 space-y-2">
         <Link to="/checkout" className="block">
           <button

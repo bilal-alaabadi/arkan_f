@@ -1,3 +1,4 @@
+// src/components/Navbar.jsx
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
@@ -67,8 +68,18 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* الحساب + السلة */}
+          {/* الحساب + البحث + السلة */}
           <div className="flex items-center gap-4">
+            {/* زر البحث (موبايل) */}
+            {/* <Link
+              to="/search"
+              className="text-[#e9b86b] text-2xl"
+              aria-label="بحث"
+              title="بحث"
+            >
+              <i className="ri-search-line"></i>
+            </Link> */}
+
             {user ? (
               <div className="relative">
                 <img
@@ -104,18 +115,18 @@ const Navbar = () => {
                 )}
               </div>
             ) : (
-              <Link to="/login" className="text-[#d3ae27] text-2xl">
+              <Link to="/login" className="text-[#e9b86b] text-2xl">
                 <i className="ri-user-line"></i>
               </Link>
             )}
 
             <button
               onClick={handleCartToggle}
-              className="relative text-[#d3ae27] text-2xl"
+              className="relative text-[#e9b86b] text-2xl"
             >
               <i className="ri-shopping-bag-line"></i>
               {products.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-[#d3ae27] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-[#e9b86b] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {products.length}
                 </span>
               )}
@@ -125,15 +136,27 @@ const Navbar = () => {
 
         {/* شريط الكمبيوتر */}
         <div className="hidden md:flex items-center justify-between h-20 pb-7">
-          {/* السلة */}
-          <div className="flex items-center gap-8">
+          {/* اليسار: البحث + السلة */}
+          <div className="flex items-center gap-6">
+            {/* زر البحث (كمبيوتر) */}
+            <Link
+              to="/search"
+              className="px-4 py-2 bg-[#e9b86b] text-white rounded-md hover:bg-[#d1a45d] transition"
+              title="ابحث عن منتج"
+            >
+              <span className="inline-flex items-center gap-2">
+                <i className="ri-search-line text-lg" />
+                <span className="hidden sm:inline">بحث</span>
+              </span>
+            </Link>
+
             <button
               onClick={handleCartToggle}
-              className="relative text-[#d3ae27] hover:text-[#d3ae27] text-3xl"
+              className="relative text-[#e9b86b] hover:text-[#e9b86b] text-3xl"
             >
               <i className="ri-shopping-bag-line"></i>
               {products.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-[#d3ae27] text-white text-sm rounded-full w-6 h-6 flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-[#e9b86b] text-white text-sm rounded-full w-6 h-6 flex items-center justify-center">
                   {products.length}
                 </span>
               )}
@@ -159,7 +182,7 @@ const Navbar = () => {
                   onClick={handleDropDownToggle}
                   src={user?.profileImage || avatarImg}
                   alt="صورة المستخدم"
-                  className="w-12 h-12 rounded-full cursor-pointer border-2 border-gray-400 hover:border-[#d3ae27] transition-colors"
+                  className="w-12 h-12 rounded-full cursor-pointer border-2 border-gray-400 hover:border-[#e9b86b] transition-colors"
                 />
                 {isDropDownOpen && (
                   <div className="absolute right-0 mt-2 w-56 bg-gray-800 border border-gray-700 rounded-lg shadow-lg z-50">
@@ -190,7 +213,7 @@ const Navbar = () => {
             ) : (
               <Link
                 to="/login"
-                className="text-[#d3ae27] text-3xl hover:text-[#d3ae27] transition-colors"
+                className="text-[#e9b86b] text-3xl hover:text-[#e9b86b] transition-colors"
               >
                 <i className="ri-user-line"></i>
               </Link>
@@ -203,19 +226,19 @@ const Navbar = () => {
           <div className="flex gap-10">
             <Link
               to="/shop"
-              className="text-white hover:text-[#d3ae27] font-bold text-xl transition-colors"
+              className="text-white hover:text-[#e9b86b] font-bold text-xl transition-colors"
             >
               المنتجات
             </Link>
             <Link
               to="/"
-              className="text-white hover:text-[#d3ae27] font-bold text-xl transition-colors"
+              className="text-white hover:text-[#e9b86b] font-bold text-xl transition-colors"
             >
               الصفحة الرئيسية
             </Link>
             <Link
               to="/about"
-              className="text-white hover:text-[#d3ae27] font-bold text-xl transition-colors"
+              className="text-white hover:text-[#e9b86b] font-bold text-xl transition-colors"
             >
               من نحن
             </Link>
@@ -242,24 +265,33 @@ const Navbar = () => {
               <i className="ri-close-line"></i>
             </button>
 
+ <Link
+              to="/search"
+              className="text-[#e9b86b] text-2xl"
+              aria-label="بحث"
+              title="بحث"
+            >
+              <i className="ri-search-line"></i>
+            </Link>
+
             <Link
               to="/shop"
               onClick={handleMobileMenuToggle}
-              className="w-full text-center py-4 px-6 font-medium text-xl text-white hover:text-[#d3ae27] transition-all duration-300"
+              className="w-full text-center py-4 px-6 font-medium text-xl text-white hover:text-[#e9b86b] transition-all duration-300"
             >
               المنتجات
             </Link>
             <Link
               to="/"
               onClick={handleMobileMenuToggle}
-              className="w-full text-center py-4 px-6 font-medium text-xl text-white hover:text-[#d3ae27] transition-all duration-300"
+              className="w-full text-center py-4 px-6 font-medium text-xl text-white hover:text-[#e9b86b] transition-all duration-300"
             >
               الصفحة الرئيسية
             </Link>
             <Link
               to="/about"
               onClick={handleMobileMenuToggle}
-              className="w-full text-center py-4 px-6 font-medium text-xl text-white hover:text-[#d3ae27] transition-all duration-300"
+              className="w-full text-center py-4 px-6 font-medium text-xl text-white hover:text-[#e9b86b] transition-all duration-300"
             >
               من نحن
             </Link>

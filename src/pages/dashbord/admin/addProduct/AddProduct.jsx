@@ -1,5 +1,5 @@
 // src/components/dashboard/products/AddProduct/AddProduct.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import TextInput from './TextInput';
 import SelectInput from './SelectInput';
@@ -9,31 +9,14 @@ import { useNavigate } from 'react-router-dom';
 
 const categories = [
   { label: 'أختر منتج', value: '' },
-  { label: 'عسل سمر', value: 'عسل سمر' },
-  { label: 'عسل السدر', value: 'عسل السدر' },
-  { label: 'عسل زهرة الربيع', value: 'عسل زهرة الربيع' },
-  { label: 'خبز النحل', value: 'خبز النحل' },
-  { label: 'حبوب لقاح', value: 'حبوب لقاح' },
-  { label: 'غذاء ملكات بلغاري', value: 'غذاء ملكات بلغاري' },
-  { label: 'غذاء ملكات استرالي', value: 'غذاء ملكات استرالي' },
-  { label: 'غذاء ملكات صيني', value: 'غذاء ملكات صيني' },
+  { label: 'أعسال عمانية', value: 'أعسال عمانية' },
+  { label: 'غذاء ملكات', value: 'غذاء ملكات' },
+  { label: 'منتجات النحله', value: 'منتجات النحله' },
+  { label: 'أعشاب علاجيه', value: 'أعشاب علاجيه' },
+  { label: 'مكسرات', value: 'مكسرات' },
+  { label: 'بن ( قهوة)', value: 'بن ( قهوة)' },
 ];
 
-const honeyCategories = ['عسل سمر', 'عسل السدر', 'عسل زهرة الربيع'];
-
-const fixedSizesByCategory = {
-  'خبز النحل': '100 جرام',
-  'حبوب لقاح': '100 جرام',
-  'غذاء ملكات بلغاري': '50 جرام',
-  'غذاء ملكات استرالي': '50 جرام',
-  'غذاء ملكات صيني': '50 جرام',
-};
-
-const honeySizes = [
-  { label: 'اختر الحجم', value: '' },
-  { label: '1 كجم', value: '1 كجم' },
-  { label: '0.5 كجم', value: '0.5 كجم' },
-];
 
 const AddProduct = () => {
   const { user } = useSelector((state) => state.auth);
@@ -43,29 +26,14 @@ const AddProduct = () => {
   const [product, setProduct] = useState({
     name: '',
     category: '',
-    size: '',
+    size: '',          // اختياري وقابل للكتابة
     price: '',
     oldPrice: '',
     description: '',
+    stock: '',         // ✅ إدخال الكمية
   });
 
   const [image, setImage] = useState([]);
-  const [showHoneySize, setShowHoneySize] = useState(false);
-
-  useEffect(() => {
-    const cat = product.category;
-
-    if (honeyCategories.includes(cat)) {
-      setShowHoneySize(true);
-      setProduct((p) => ({ ...p, size: '' })); // يخليه يختار من القائمة
-    } else if (fixedSizesByCategory[cat]) {
-      setShowHoneySize(false);
-      setProduct((p) => ({ ...p, size: fixedSizesByCategory[cat] }));
-    } else {
-      setShowHoneySize(false);
-      setProduct((p) => ({ ...p, size: '' }));
-    }
-  }, [product.category]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -81,7 +49,6 @@ const AddProduct = () => {
       'السعر': product.price,
       'الوصف': product.description,
       'الصور': image.length > 0,
-      'الحجم': product.size,
     };
 
     const missing = Object.entries(required).filter(([_, v]) => !v).map(([k]) => k);
@@ -90,20 +57,28 @@ const AddProduct = () => {
       return;
     }
 
+    // التحقق من الكمية (يمكن تركها فارغة => 0)
+    const parsedStock = product.stock !== '' ? Number(product.stock) : 0;
+    if (Number.isNaN(parsedStock) || parsedStock < 0) {
+      alert('الكمية يجب أن تكون رقمًا صحيحًا أكبر أو يساوي 0');
+      return;
+    }
+
     try {
       await addProduct({
-        name: product.name,           // السيرفر يضيف الحجم للاسم
+        name: product.name,
         category: product.category,
-        size: product.size,
+        size: product.size || undefined, // غير إجباري
         price: Number(product.price),
         oldPrice: product.oldPrice !== '' ? Number(product.oldPrice) : undefined,
         description: product.description,
         image,
         author: user?._id,
+        stock: parsedStock, // ✅ إرسال الكمية
       }).unwrap();
 
       alert('تمت إضافة المنتج بنجاح');
-      setProduct({ name: '', category: '', size: '', price: '', oldPrice: '', description: '' });
+      setProduct({ name: '', category: '', size: '', price: '', oldPrice: '', description: '', stock: '' });
       setImage([]);
       navigate('/shop');
     } catch (err) {
@@ -132,25 +107,13 @@ const AddProduct = () => {
           options={categories}
         />
 
-        {showHoneySize && (
-          <SelectInput
-            label="الحجم"
-            name="size"
-            value={product.size}
-            onChange={handleChange}
-            options={honeySizes}
-          />
-        )}
-
-        {!showHoneySize && fixedSizesByCategory[product.category] && (
-          <TextInput
-            label="الحجم"
-            name="size"
-            value={product.size}
-            onChange={() => {}}
-            readOnly
-          />
-        )}
+        <TextInput
+          label="الحجم (اختياري)"
+          name="size"
+          placeholder="مثال: 250 جرام أو 1 كجم"
+          value={product.size}
+          onChange={handleChange}
+        />
 
         <TextInput
           label="السعر"
@@ -167,6 +130,15 @@ const AddProduct = () => {
           type="number"
           placeholder="100"
           value={product.oldPrice}
+          onChange={handleChange}
+        />
+
+        <TextInput
+          label="الكمية المتاحة"
+          name="stock"
+          type="number"
+          placeholder="0"
+          value={product.stock}
           onChange={handleChange}
         />
 
